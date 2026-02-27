@@ -1,2 +1,2 @@
 # plt-agent-os
-AgentOS development
+agentOS development
