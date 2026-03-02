@@ -1,0 +1,11 @@
+[Unit]
+Description=Test Controller Agent
+After=systemd-user-sessions.service
+
+[Service]
+ExecStart=/bin/true
+Restart=on-failure
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

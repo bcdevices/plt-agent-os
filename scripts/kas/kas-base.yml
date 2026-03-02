@@ -1,0 +1,70 @@
+header:
+  version: 14
+
+defaults:
+  repos:
+    branch: "walnascar"
+
+repos:
+
+  plt-agent-os:
+
+  poky:
+    url: https://git.yoctoproject.org/poky
+    # walnascar-5.2.3 (d734c87ad12346ff880884b735605044bd80af2b)
+    commit: "d734c87ad12346ff880884b735605044bd80af2b"
+    path: layers/poky
+    layers:
+      meta:
+      meta-poky:
+      meta-yocto-bsp:
+
+  meta-openembedded:
+    url: https://github.com/openembedded/meta-openembedded.git
+    path: layers/meta-openembedded
+    layers:
+      meta-oe:
+      meta-python:
+      meta-multimedia:
+      meta-networking:
+
+  meta-raspberrypi:
+    url: https://git.yoctoproject.org/meta-raspberrypi
+    path: layers/meta-raspberrypi
+
+bblayers_conf_header:
+  standard: |
+    CONF_VERSION = "2"
+    POKY_BBLAYERS_CONF_VERSION = "2"
+    #BBPATH = "${TOPDIR}"
+    #BBFILES ?= ""
+
+local_conf_header:
+
+  diskmon: |
+    BB_DISKMON_DIRS = "\
+      STOPTASKS,${TMPDIR},1G,100K \
+      STOPTASKS,${DL_DIR},1G,100K \
+      STOPTASKS,${SSTATE_DIR},1G,100K \
+      STOPTASKS,/tmp,100M,100K \
+      HALT,${TMPDIR},100M,1K \
+      HALT,${DL_DIR},100M,1K \
+      HALT,${SSTATE_DIR},100M,1K \
+      HALT,/tmp,10M,1K"
+
+  meta-agentos: |
+    # BB_HASHSERVE_UPSTREAM = "wss://hashserv.yoctoproject.org/ws"
+    # SSTATE_MIRRORS ?= "file://.* http://sstate.yoctoproject.org/all/PATH;downloadfilename=PATH"
+    # BB_HASHSERVE = "auto"
+    # BB_SIGNATURE_HANDLER = "OEEquivHash"
+    # PACKAGE_CLASSES = "package_rpm"
+    SDKMACHINE = "x86_64"
+    USER_CLASSES = "buildstats"
+    PATCHRESOLVE = "noop"
+    LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"
+    PREFERRED_RPROVIDER_libnss-mdns = "avahi-libnss-mdns"
+    INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+    DISTRO_FEATURES:remove = "ptest debuginfod"
+    # allow missing recommends to reduce image size
+    PACKAGECONFIG:remove:pn-qemu-native = "sdl"
+    PACKAGECONFIG:remove:pn-nativesdk-qemu = "sdl"

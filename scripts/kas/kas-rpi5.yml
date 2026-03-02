@@ -1,0 +1,33 @@
+header:
+  version: 14
+  includes:
+    - scripts/kas/kas-base.yml
+
+machine: raspberrypi5
+distro: agentos
+target:
+  - core-image-agentos
+
+local_conf_header:
+  meta-agentos-rpi5: |
+
+    # RPi firmware config
+    ENABLE_DWC2_PERIPHERAL = "1"
+    ENABLE_I2C = "1"
+    ENABLE_UART = "1"
+    RPI_USE_U_BOOT = "1"
+    GPU_MEM = "16"
+    VIDEO_CAMERA = "1"
+    RASPBERRYPI_CAMERA_V3 = "1"
+    # Add 1 second boot delay at firmware stage
+    BOOT_DELAY = "1"
+    # Optional fine-grained ms delay
+    # BOOT_DELAY_MS = "500"
+    KERNEL_MODULE_AUTOLOAD:append:raspberrypi5 = " i2c-dev i2c-bcm2835"
+
+    # Image output format
+    #IMAGE_FSTYPES = "wic.bmap wic sdimg"
+
+  rpi-uart-clean-boot: |
+    # Keep UART RX high to prevent spurious keypresses halting U-Boot
+    RPI_EXTRA_CONFIG:append:raspberrypi5 = "\n# Keep UART RX high\ngpio=15=ip,pu\n"
