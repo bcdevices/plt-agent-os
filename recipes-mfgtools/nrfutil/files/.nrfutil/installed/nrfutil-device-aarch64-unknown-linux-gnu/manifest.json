@@ -1,0 +1,1 @@
+{"name":"nrfutil-device","version":"2.17.1","platform":"aarch64-unknown-linux-gnu","build":"d443a34b585a766f37af9b0406cec43d45582ad9","package-format-version":"","description":"Device discovery, programming, and operations such as erase, reset, and recovery.","classification":"nrf-external"}

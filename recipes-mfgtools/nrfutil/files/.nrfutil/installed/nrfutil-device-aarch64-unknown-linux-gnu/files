@@ -1,0 +1,10 @@
+Filepath,Checksum
+../../share/doc/nrfutil-device/html/style.css,432296816127560c792cbae16e993bff5919e58f1f59f308967816c7ea69f3d7
+../../share/doc/nrfutil-device/html/index.html,78fe7e0ae86fe458dd076e70122a4b6f318b7f27f67ed65bb49f55c6fa2ebb42
+../../share/doc/nrfutil-device/md/index.md,07ed808ccb5fb09db070729d4e5b12742452e3f5ed869b7d5f8694465a4f49ed
+../../share/nrfutil-device/udev/rules.d/99-mm-nrf-blacklist.rules,98b8aa6172456f08f0f2aa275739b2eaf134455093989c13ba5cc34568a2154a
+../../share/nrfutil-device/udev/rules.d/71-nrf.rules,b3c051b18fe02a1fcdf2673aaad447b216366aeabae005768b92f8ae9dae5eac
+../../share/nrfutil-device/licenses.json,0bed7d4b51bc5bfd2344d5a8a1d2a1fd8212075a374b10ad3c3f7da83c680f8b
+../../lib/nrfutil-device/plugin-probe-worker,c33e2ff983bc0c6c8276fd6e1dbdcb050dbbd4402cd5b922a1ce1c0eb8624c11
+../../bin/nrfutil-device,18d715939007042c9e8443509c7bf060bee8ff7db79b2dd9fb490feb6aded522
+manifest.json,834f1bcf45005fa5ce24252efaf6526b33888ed146969fd152547dd4b6285f71
