@@ -1,0 +1,30 @@
+# Yocto build output
+build/
+downloads/
+sstate-cache/
+tmp/
+/layers/
+
+# Common editor files
+*.swp
+*~
+*.bak
+.DS_Store
+.vscode/
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# SD card images (optionally exclude or keep, your choice)
+*.wic
+*.wic.bmap
+*.sdimg
+*.sdimg.bmap
+
+# Kas files
+.kas_shell_history
