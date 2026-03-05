@@ -1,0 +1,12 @@
+[Unit]
+Description=Test Controller Agent USB-MSC handler
+After=local-fs.target usb-gadget.target
+
+[Service]
+#ExecStart=/sbin/modprobe g_mass_storage removable=y stall=0
+ExecStart=/opt/pltagent/sbin/pltagent-usbgadget-handler.sh -d 0
+Restart=no
+Type=oneshot
+
+[Install]
+WantedBy=sysinit.target
