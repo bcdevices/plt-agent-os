@@ -6,8 +6,11 @@ HOMEPAGE = "https://www.nordicsemi.com/Products/Development-tools/nRF-Util"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
-SRC_URI = "https://files.nordicsemi.com/artifactory/swtools/external/nrfutil/executables/aarch64-unknown-linux-gnu/nrfutil \
-           file://.nrfutil"
+SRC_URI = " \
+  https://files.nordicsemi.com/artifactory/swtools/external/nrfutil/executables/aarch64-unknown-linux-gnu/nrfutil \
+  file://.nrfutil \
+  file://nrfutil_wrapper.sh \
+"
 SRC_URI[sha256sum] = "9df546a5a7e8c82b896f70db4424dba08cbca32c1aedd2affdde5782b782d81b"
 #S = "${WORKDIR}/sources"
 UNPACKDIR = "${S}"
@@ -23,8 +26,9 @@ CONFFILES:${PN} = "${sysconfdir}/udev/rules.d/*rules"
 do_install() {
     install -d ${D}/opt/nrfutil
     install -m 0755 ${S}/nrfutil ${D}/opt/nrfutil/nrfutil
+    # Install wrapper script for nrfutil on readonly filesystem
     install -d ${D}${bindir}
-    ln -s /opt/nrfutil/nrfutil ${D}${bindir}/nrfutil
+    install -m 0755 ${S}/nrfutil_wrapper.sh ${D}${bindir}/nrfutil
     # Install udev rules
     install -d ${D}${nonarch_base_libdir}/udev/rules.d
     install -m 0644 ${S}/.nrfutil/share/nrfutil-device/udev/rules.d/*.rules ${D}${nonarch_base_libdir}/udev/rules.d/
