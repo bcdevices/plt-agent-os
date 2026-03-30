@@ -37,4 +37,3 @@ RDEPENDS:${PN} += " uboot-splash-agentos"
 RDEPENDS:${PN} += " segger-jlink-placeholder"
 RDEPENDS:${PN} += " nrfutil-placeholder"
 RDEPENDS:${PN} += " usbboot"
-
