@@ -1,0 +1,32 @@
+header:
+  version: 14
+  includes:
+    - scripts/kas/kas-base.yml
+
+machine: raspberrypi5
+target:
+  - manufacturing-image-agentos
+
+local_conf_header:
+  meta-agentos-rpi5: |
+
+    # RPi firmware config
+    ENABLE_DWC2_PERIPHERAL = "1"
+    # Image output format
+    #IMAGE_FSTYPES = "wic.bmap wic sdimg"
+    INHERIT_DISTRO:remove = "create-spdx"
+    INITRAMFS_IMAGE = "initramfs-manufacturing-agentos"
+  rpi-uart-clean-boot: |
+    # Keep UART RX high to prevent spurious keypresses halting U-Boot
+    RPI_EXTRA_CONFIG:append:raspberrypi5 = "\n# Keep UART RX high\ngpio=15=ip,pu\n"
+  initramfs-specific-debugging: |
+    # Explicitly set initramfs image to work around earlier RPi5 bootloader versions
+    RPI_EXTRA_CONFIG:append:raspberrypi5 = "\n# Boot initramfs image\ninitramfs initramfs_2712 followkernel\n"
+    # Enable RP1 UART to view RPi EEPROM/Bootloader logs
+    RPI_EXTRA_CONFIG:append:raspberrypi5 = "\n# UART configuration\nenable_rp1_uart=1\n"
+    # Enable 2nd stage UART for early EEPROM/Bootloader logs
+    RPI_EXTRA_CONFIG:append:raspberrypi5 = "\n# UART 2nd stage\nuart_2ndstage=1\n"
+    # Enable console on uart0 for early logs since USB is not available in 2nd stage
+    RPI_EXTRA_CONFIG:append:raspberrypi5 = "\n# UART overlay\ndtoverlay=uart0-pi5\n"
+    # No root needed since initramfs is used, dwc_otg.lpm_enable=0 is needed to provide USB MSD access
+    CMDLINE:raspberrypi5 = " dwc_otg.lpm_enable=0 console=ttyAMA0,115200"

@@ -24,6 +24,7 @@ IMAGE_INSTALL:append = " packagegroup-agentos-base"
 IMAGE_INSTALL:append = " packagegroup-bsp-per101"
 IMAGE_INSTALL:append = " packagegroup-modbus"
 
+IMAGE_INSTALL:append = " raspi-utils"
 IMAGE_INSTALL:append:raspberrypi4 = " rpi-eeprom"
 IMAGE_INSTALL:append:raspberrypi4-64 = " rpi-eeprom"
 IMAGE_INSTALL:append:raspberrypi5 = " rpi-eeprom"
