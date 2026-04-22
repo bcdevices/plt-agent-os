@@ -14,8 +14,7 @@ SRC_URI = "\
   file://pltagent-usbgadget-handler.sh \
 "
 
-S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
+S = "${WORKDIR}"
 
 FILES:${PN} += " /opt/pltagent/bin/pltagent-msc-mount"
 FILES:${PN} += " /opt/pltagent/bin/pltagent-msc-mount"

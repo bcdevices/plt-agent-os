@@ -10,8 +10,7 @@ SRC_URI = "\
   file://nrf52_flash.py \
 "
 
-S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
+S = "${WORKDIR}"
 
 RDEPENDS:${PN} += " packagegroup-base"
 RDEPENDS:${PN} += " pltagent"
