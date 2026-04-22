@@ -7,13 +7,10 @@ HOMEPAGE = "https://www.segger.com/downloads/jlink/"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
-#S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
-
 SRC_URI = "https://www.segger.com/downloads/jlink/JLink_Linux_V916a_arm64.tgz"
 SRC_URI[sha256sum] = "3dfc155c9e496d2998fd0d159caa1593e3d2f8360bd71d71b60693c1cac50b59"
 FETCHCMD_wget = "/usr/bin/env wget -t 2 -T 100 --post-data='accept_license_agreement=accepted&non_emb_ctr=confirmed'"
-
+S = "${WORKDIR}"
 CONFFILES:${PN} = "${sysconfdir}/udev/rules.d/99-jlink.rules"
 
 FILES:${PN} = " \
@@ -42,7 +39,7 @@ RDEPENDS:${PN} = " \
 INSANE_SKIP:${PN} += "ldflags dev-so"
 
 do_install() {
-    SEGGER_SRC_DIR=${S}/$(ls "${S}/" | head -n 1)
+    SEGGER_SRC_DIR=${S}/$(ls "${S}/" | grep JLink_Linux)
     SEGGER_INSTALL_DIR=${D}/opt/SEGGER/JLink_V916a
 
     install -d ${SEGGER_INSTALL_DIR}
