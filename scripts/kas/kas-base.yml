@@ -3,7 +3,7 @@ header:
 
 defaults:
   repos:
-    branch: "walnascar"
+    branch: "scarthgap"
 
 repos:
 
@@ -11,8 +11,7 @@ repos:
 
   poky:
     url: https://git.yoctoproject.org/poky
-    # walnascar-5.2.3 (d734c87ad12346ff880884b735605044bd80af2b)
-    commit: "d734c87ad12346ff880884b735605044bd80af2b"
+    commit: "cb2dcb4963e5fbe449f1bcb019eae883ddecc8ec"
     path: layers/poky
     layers:
       meta:
@@ -21,6 +20,8 @@ repos:
 
   meta-openembedded:
     url: https://github.com/openembedded/meta-openembedded.git
+    # scarthgap-5.0
+    commit: "5124ac4a658899158f4a7a2ddf1d2ca931ec7d0e"
     path: layers/meta-openembedded
     layers:
       meta-oe:
@@ -30,7 +31,14 @@ repos:
 
   meta-raspberrypi:
     url: https://git.yoctoproject.org/meta-raspberrypi
+    # scarthgap-5.0
+    commit: "2c646d29912dcc873469a57b1c207e1549c5094d"
     path: layers/meta-raspberrypi
+
+  meta-rauc:
+    url: https://github.com/rauc/meta-rauc.git
+    commit: "d63878f20eba7a85ecf53566e7a3377e78bb46ac"
+    path: layers/meta-rauc
 
 bblayers_conf_header:
   standard: |

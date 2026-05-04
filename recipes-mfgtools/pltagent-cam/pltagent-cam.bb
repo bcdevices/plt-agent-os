@@ -5,14 +5,13 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 
 SRC_URI = "file://pltagent-cam.sh"
 
-S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
+S = "${WORKDIR}"
 
 inherit allarch
 
 do_install() {
     install -d ${D}${bindir}
-    install -m 0755 ${UNPACKDIR}/pltagent-cam.sh ${D}${bindir}/pltagent-cam
+    install -m 0755 ${S}/pltagent-cam.sh ${D}${bindir}/pltagent-cam
 }
 
 #RDEPENDS:${PN} += " util-linux-agetty"

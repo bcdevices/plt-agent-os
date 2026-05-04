@@ -28,3 +28,11 @@ IMAGE_INSTALL:append = " raspi-utils"
 IMAGE_INSTALL:append:raspberrypi4 = " rpi-eeprom"
 IMAGE_INSTALL:append:raspberrypi4-64 = " rpi-eeprom"
 IMAGE_INSTALL:append:raspberrypi5 = " rpi-eeprom"
+
+WKS_FILE = "core-image-agentos.wks"
+
+# Create an empty data directory in the rootfs for runtime use by AgentOS
+ROOTFS_POSTINSTALL_COMMAND:append = " create_data_dir;"
+create_data_dir() {
+    install -d ${IMAGE_ROOTFS}/data
+}

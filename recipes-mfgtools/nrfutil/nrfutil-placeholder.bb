@@ -12,8 +12,8 @@ SRC_URI = " \
   file://nrfutil_wrapper.sh \
 "
 SRC_URI[sha256sum] = "9df546a5a7e8c82b896f70db4424dba08cbca32c1aedd2affdde5782b782d81b"
-#S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
+
+S = "${WORKDIR}"
 
 DEPENDS += "pltagent"
 

@@ -24,7 +24,7 @@ local_conf_header:
     # Optional fine-grained ms delay
     # BOOT_DELAY_MS = "500"
     KERNEL_MODULE_AUTOLOAD:append:raspberrypi5 = " i2c-dev i2c-bcm2835"
-
+    CMDLINE_ROOT_PARTITION = "/dev/mmcblk0p3"
     # Image output format
     #IMAGE_FSTYPES = "wic.bmap wic sdimg"
 
