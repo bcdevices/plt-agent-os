@@ -32,11 +32,11 @@ udc_list=$(ls /sys/class/udc)
 udc_count=$(echo "$udc_list" | wc -l)
 
 if [ "$udc_count" -eq 0 ]; then
-    echo "Error: No UDC found in /sys/class/udc!" >&2
-    exit 1
+	echo "Error: No UDC found in /sys/class/udc!" >&2
+	exit 1
 elif [ "$udc_count" -gt 1 ]; then
-    echo "Error: Multiple UDCs found in /sys/class/udc: $udc_list" >&2
-    exit 1
+	echo "Error: Multiple UDCs found in /sys/class/udc: $udc_list" >&2
+	exit 1
 fi
 
 udc_dev="$udc_list"
@@ -56,6 +56,7 @@ partition_offset="1024K"
 local_mount_path="/run/pltagent/mnt"
 loopdev="/dev/loop0"
 
+
 if [ ! -f "${sysfs_udc_state_path}" ]; then
 	echo "FAIL:${sysfs_udc_state_path} not found"
 	exit 1
@@ -69,18 +70,18 @@ if [ ! -f "${sysfs_msc_forced_eject_path}" ]; then
 	exit 1
 fi
 
-if [ ! -d "${local_mount_path}" ]; then
-	mkdir -m 0755 -p "${local_mount_path}"
-fi
+mkdir -m 0755 -p "${local_mount_path}"
 
-function gen_image {
+gen_image() {
 	dd if=/dev/zero of="${backing_file_path}" bs=${backing_file_size} count=1
 	/usr/sbin/parted --script "${backing_file_path}" -- mklabel msdos \
 		mkpart primary fat16 1MiB -2048s
-	/usr/sbin/mkfs.vfat.dosfstools -v --offset="${partition_offset_dosfs}" -S 1024 -F 16 -n RAMDISK "${backing_file_path}"
+	/usr/sbin/mkfs.vfat.dosfstools -v \
+		--offset="${partition_offset_dosfs}" \
+		-S 1024 -F 16 -n RAMDISK "${backing_file_path}"
 }
 
-function mount_locally {
+mount_locally() {
 	if [ "$CMDOPT" = "-forced_eject" ]; then
 		echo "Forcing eject.."
 		echo "1" >"${sysfs_msc_forced_eject_path}"
@@ -92,41 +93,47 @@ function mount_locally {
 		done
 		echo "Ejected"
 	else
-		echo "" >"${sysfs_msc_file_path}"
+		# Do not clear LUN unless explicitly ejecting
+		# This prevents USB re-enumeration mid-operation
+		true
 	fi
+
 	if [ ! -f "${backing_file_path}" ]; then
 		gen_image
 	fi
-	parted_output=$(/usr/sbin/parted -m "${backing_file_path}" print)
+
 	echo "partition_offset: ${partition_offset}"
+
 	/sbin/losetup -o "${partition_offset}" "${loopdev}" "${backing_file_path}"
 	mount -t vfat "${loopdev}" "${local_mount_path}"
 }
 
-function check_is_mounted {
+check_is_mounted() {
 	mount_entry=$(cat /proc/mounts | cut -d\  -f2 | grep ${local_mount_path})
 	echo " mount_entry: '${mount_entry}'"
 	if [ -n "${mount_entry}" ]; then return 1; fi
 	return 0
 }
 
-function unpresent {
-       if [ "$CMDOPT" = "-forced_eject" ]; then
-               echo "Forcing eject.."
-               echo "1" >"${sysfs_msc_forced_eject_path}"
-               echo "" >"${sysfs_msc_file_path}"
-       elif [ "$CMDOPT" = "-await_eject" ]; then
-               while [ ! -z "$(cat "${sysfs_msc_file_path}")" ]; do
-                       sleep 1
-                       echo "Awaiting eject.."
-               done
-               echo "Ejected"
-       else
-               echo "" >"${sysfs_msc_file_path}"
-       fi
+unpresent() {
+	if [ "$CMDOPT" = "-forced_eject" ]; then
+		echo "Forcing eject.."
+		echo "1" >"${sysfs_msc_forced_eject_path}"
+		echo "" >"${sysfs_msc_file_path}"
+	elif [ "$CMDOPT" = "-await_eject" ]; then
+		while [ ! -z "$(cat "${sysfs_msc_file_path}")" ]; do
+			sleep 1
+			echo "Awaiting eject.."
+		done
+		echo "Ejected"
+	else
+		# Do NOT detach LUN unless forced eject is called
+		# to prevent USB re-enumeration mid-operation
+		echo "1" >"${sysfs_msc_forced_eject_path}"
+	fi
 }
 
-function present_to_usbhost {
+present_to_usbhost() {
 	umount "${local_mount_path}" 2>/dev/null
 	/sbin/losetup -D
 	if [ ! -f "${backing_file_path}" ]; then
@@ -135,17 +142,21 @@ function present_to_usbhost {
 	echo "${backing_file_path}" >"${sysfs_msc_file_path}"
 }
 
-function check_is_presented {
+check_is_presented() {
 	sysfs_msc_file=$(cat ${sysfs_msc_file_path})
 	if [ -z "${sysfs_msc_file}" ]; then return 0; fi
 	return 1
 }
 
+# -----------------------------
+# state
+# -----------------------------
 can_mount=0
 can_present=0
 
 check_is_presented
 is_presented=$?
+
 udc_state=$(cat ${sysfs_udc_state_path})
 
 case ${udc_state} in
@@ -154,25 +165,9 @@ case ${udc_state} in
 	;;
 "addressed")
 	echo "USB gadget is being addressed"
-	# ```
-	# usb <USBPATH>: new high-speed USB device number <USBDEVNUM> using <DRIVER>
-	# usb <USBPATH>: New USB device found, idVendor=0525, idProduct=a4a5, bcdDevice= 6.01
-	# usb <USBPATH>: New USB device strings: Mfr=3, Product=4, SerialNumber=0
-	# usb <USBPATH>: Product: Mass Storage Gadget
-	# usb <USBPATH>: Manufacturer: Linux 6.1.20-v8 with <USBDEV>
-	# ```
 	;;
 "configured")
 	echo "USB gadget is configured (connected to PLT)"
-	# ```
-	# usb-storage <USBPATH>:1.0: USB Mass Storage device detected
-	# usb-storage <USBPATH>:1.0: Quirks match for vid 0525 pid a4a5: 10000
-	# scsi <SCSINUM>: usb-storage <USBPATH>:1.0
-	# scsi <SCSINUM>:0:0:0: Direct-Access     Linux    File-Stor Gadget 0601 PQ: 0 ANSI: 2
-	# sd <SCSINUM>:0:0:0: Power-on or device reset occurred
-	# sd <SCSINUM>:0:0:0: [sdc] Media removed, stopped polling
-	# sd <SCSINUM>:0:0:0: [sdc] Attached SCSI removable disk
-	# ```
 	can_present=1
 	;;
 "suspended")
@@ -230,7 +225,7 @@ case ${is_presented} in
 1)
 	echo "Disk image is presented to PLT"
 	if [ ${should_present} -eq 1 ]; then
- 		echo "Retracting disk image from PLT.."
+		echo "Retracting disk image from PLT.."
 		unpresent
 		echo "Presenting disk image to PLT.."
 		present_to_usbhost
