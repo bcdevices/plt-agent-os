@@ -19,6 +19,13 @@ SRC_URI:remove:rpi = "file://0001-rpi-always-set-fdt_addr-with-firmware-provided
 
 DEPENDS:append = " gnutls-native"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI:append = " file://splash.cfg file://rpi5-autoboot.cfg"
-UBOOT_CONFIG_FRAGMENTS:append = " ${WORKDIR}/splash.cfg"
-UBOOT_CONFIG_FRAGMENTS:append:raspberrypi5 = " ${WORKDIR}/rpi5-autoboot.cfg"
+SRC_URI:append = " file://splash.cfg file://rauc.cfg file://rpi5-autoboot.cfg "
+
+UBOOT_CONFIG_FRAGMENTS:append = " \
+    ${WORKDIR}/splash.cfg \
+    ${WORKDIR}/rauc.cfg \
+    "
+UBOOT_CONFIG_FRAGMENTS:append:raspberrypi5 = " \
+    ${WORKDIR}/rpi5-autoboot.cfg \
+    "
+EXTRA_OEMAKE:append = " KCPPFLAGS=\"-DCFG_EXTRA_ENV_SETTINGS=\\\"'boot_targets=mmc0\\0bootmeths=rauc\\0'\\\"\""

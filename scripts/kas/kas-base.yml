@@ -40,6 +40,12 @@ repos:
     commit: "d63878f20eba7a85ecf53566e7a3377e78bb46ac"
     path: layers/meta-rauc
 
+  meta-lts-mixins:
+    url: "https://git.yoctoproject.org/meta-lts-mixins"
+    commit: "66ceeebd047d7fdfc8668b300319a76da8ae257d"
+    path: layers/meta-lts-mixins
+    branch: scarthgap/u-boot
+
 bblayers_conf_header:
   standard: |
     CONF_VERSION = "2"
