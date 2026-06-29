@@ -28,3 +28,6 @@ __pycache__/
 
 # Kas files
 .kas_shell_history
+
+# Don't ignore anything in .github
+!.github/**
