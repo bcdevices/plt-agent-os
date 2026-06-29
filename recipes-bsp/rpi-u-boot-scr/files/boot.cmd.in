@@ -1,0 +1,9 @@
+fdt addr ${fdt_addr}
+
+# Set kernel bootargs
+fdt get value bootargs /chosen bootargs
+setenv bootargs "${bootargs} root=/dev/mmcblk0p${distro_rootpart} ${raucargs}"
+
+# Start the kernel
+fatload @@BOOT_MEDIA@@ 0:${distro_bootpart} ${kernel_addr_r} @@KERNEL_IMAGETYPE@@
+@@KERNEL_BOOTCMD@@ ${kernel_addr_r} - ${fdt_addr}
