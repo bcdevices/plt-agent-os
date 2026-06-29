@@ -28,6 +28,24 @@ shift $((OPTIND - 1))
 
 /sbin/modprobe libcomposite
 
+gen_image() {
+	dd if=/dev/zero of="${backing_file_path}" bs=${backing_file_size} count=1
+	/usr/sbin/parted --script "${backing_file_path}" -- mklabel msdos \
+		mkpart primary fat16 1MiB -2048s
+	/usr/sbin/mkfs.vfat.dosfstools -v \
+		--offset="${partition_offset_dosfs}" \
+		-S 1024 -F 16 -n RAMDISK "${backing_file_path}"
+}
+
+present_to_usbhost() {
+        mkdir -m 0755 -p "${local_mount_path}"
+	umount "${local_mount_path}" 2>/dev/null
+	/sbin/losetup -D
+	if [ ! -f "${backing_file_path}" ]; then
+		gen_image
+	fi
+	echo "${backing_file_path}" >"${sysfs_msc_file_path}"
+}
 # USB Device Controller
 #udc_dev="*"
 #udc_dev="fe980000.usb" (RPi4)
@@ -75,8 +93,15 @@ mkdir "${sysfs_usb_gadget_devpath}/functions/acm.0"
 ln -s -t "${sysfs_usb_gadget_devpath}/configs/c.1" "${sysfs_usb_gadget_devpath}/functions/acm.0"
 
 # MSC
-mkdir "${sysfs_usb_gadget_devpath}/functions/mass_storage.0"
-ln -s -t "${sysfs_usb_gadget_devpath}/configs/c.1" "${sysfs_usb_gadget_devpath}/functions/mass_storage.0"
+sysfs_msc_dir="${sysfs_usb_gadget_devpath}/functions/mass_storage.0"
+mkdir "${sysfs_msc_dir}"
+ln -s -t "${sysfs_usb_gadget_devpath}/configs/c.1" "${sysfs_msc_dir}"
+sysfs_msc_lun_path="${sysfs_msc_dir}/lun.0"
+local_mount_path="/run/pltagent/mnt"
+backing_file_path="/run/pltagent/usb-msc.img"
+backing_file_size="256M"
+partition_offset_dosfs="1024"
+sysfs_msc_file_path="${sysfs_msc_lun_path}/file"
 
 if [ $should_disable -eq 1 ]; then
 	# Disable existing for the USB controller
@@ -85,8 +110,9 @@ fi
 if [ $should_enable -eq 1 ]; then
 	# HACK: avoid -EBUSY
 	sleep 1
+	present_to_usbhost
+	sync
 	# Enable new configuration for the USB controller
 	echo "${udc_dev}" >"${sysfs_usb_gadget_devpath}/UDC"
-
 	systemctl start serial-getty@ttyGS0
 fi
