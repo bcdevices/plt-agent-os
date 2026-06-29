@@ -1,0 +1,32 @@
+name: Build Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Build target
+        required: true
+        type: choice
+        options:
+          - kas-rpi5.yml
+          - kas-rpi-mfg-image.yml
+
+      tag:
+        description: Git tag to build
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout selected tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Build
+        uses: ./.github/actions/build
+        with:
+          target: ${{ inputs.target }}

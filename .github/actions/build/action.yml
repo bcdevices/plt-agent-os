@@ -1,0 +1,23 @@
+name: build
+description: build action
+
+inputs:
+  target:
+    description: build target
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y make chrpath diffstat pipx
+        pipx install "kas==5.1"
+    - name: Build
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        echo "Building target: ${{ inputs.target }}"
+        KAS_YML="scripts/kas/${{ inputs.target }}" make
